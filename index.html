@@ -1,0 +1,637 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>StayEase · hotel booking</title>
+  <!-- Font Awesome 6 (free) -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <style>
+    /* ----- GLOBAL & RESET ----- */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+    }
+
+    body {
+      background: #f4f7fc;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      padding: 1.5rem;
+    }
+
+    /* subtle card container */
+    .booking-wrapper {
+      max-width: 1200px;
+      width: 100%;
+      background: #ffffff;
+      border-radius: 2.5rem;
+      box-shadow: 0 20px 40px -12px rgba(0, 20, 40, 0.25);
+      padding: 2.5rem 2rem;
+      transition: all 0.2s ease;
+    }
+
+    /* headings */
+    h1 {
+      font-size: 2rem;
+      font-weight: 600;
+      letter-spacing: -0.02em;
+      color: #0b2b4a;
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      margin-bottom: 0.5rem;
+    }
+
+    h1 i {
+      color: #2a7faa;
+      font-size: 2rem;
+    }
+
+    .subhead {
+      font-size: 1rem;
+      color: #5f6c7a;
+      margin-bottom: 2.5rem;
+      border-left: 4px solid #2a7faa;
+      padding-left: 1rem;
+      font-weight: 400;
+    }
+
+    /* ----- MAIN GRID: form + summary ----- */
+    .booking-panel {
+      display: grid;
+      grid-template-columns: 1.6fr 1fr;
+      gap: 2rem;
+      align-items: start;
+    }
+
+    /* form section */
+    .booking-form {
+      background: #ffffff;
+      border-radius: 1.8rem;
+      padding: 0.2rem 0; /* clean internal spacing */
+    }
+
+    .form-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1.2rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      gap: 0.45rem;
+    }
+
+    .form-group.full-width {
+      grid-column: span 2;
+    }
+
+    label {
+      font-size: 0.85rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.03em;
+      color: #345a7a;
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+    }
+
+    label i {
+      font-size: 0.9rem;
+      color: #2a7faa;
+      width: 1.2rem;
+    }
+
+    input, select, textarea {
+      width: 100%;
+      padding: 0.9rem 1.2rem;
+      border: 1.5px solid #d9e2ec;
+      border-radius: 1.2rem;
+      font-size: 0.95rem;
+      background: #f9fcff;
+      transition: 0.2s ease;
+      outline: none;
+      color: #13324b;
+      font-weight: 500;
+    }
+
+    input:focus, select:focus, textarea:focus {
+      border-color: #2a7faa;
+      background: #ffffff;
+      box-shadow: 0 4px 12px rgba(42, 127, 170, 0.15);
+    }
+
+    input::placeholder {
+      color: #9aaebf;
+      font-weight: 400;
+    }
+
+    /* guests row (two small selects) */
+    .guest-row {
+      display: flex;
+      gap: 1rem;
+    }
+
+    .guest-row .form-group {
+      flex: 1;
+    }
+
+    /* special request full width */
+    textarea {
+      resize: vertical;
+      min-height: 80px;
+    }
+
+    /* ----- BUTTON ----- */
+    .btn-book {
+      background: #0b2b4a;
+      color: white;
+      border: none;
+      border-radius: 3rem;
+      padding: 1.1rem 2rem;
+      font-size: 1.1rem;
+      font-weight: 600;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.8rem;
+      width: 100%;
+      cursor: pointer;
+      transition: 0.2s;
+      margin-top: 0.8rem;
+      letter-spacing: 0.01em;
+      box-shadow: 0 6px 18px rgba(11, 43, 74, 0.2);
+    }
+
+    .btn-book i {
+      font-size: 1.2rem;
+    }
+
+    .btn-book:hover {
+      background: #1f4b73;
+      transform: scale(1.01);
+      box-shadow: 0 10px 24px rgba(11, 43, 74, 0.3);
+    }
+
+    .btn-book:active {
+      transform: scale(0.99);
+    }
+
+    /* ----- SUMMARY CARD (right side) ----- */
+    .summary-card {
+      background: linear-gradient(145deg, #f2f9ff, #e8f1f9);
+      border-radius: 1.8rem;
+      padding: 1.8rem 1.6rem;
+      border: 1px solid #d0e2f0;
+      box-shadow: inset 0 1px 3px rgba(255, 255, 255, 0.8), 0 10px 20px -10px rgba(0, 40, 70, 0.15);
+      position: sticky;
+      top: 2rem;
+    }
+
+    .summary-card h2 {
+      font-size: 1.3rem;
+      font-weight: 600;
+      color: #0b2b4a;
+      margin-bottom: 1.5rem;
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      border-bottom: 2px dashed #b6d2e8;
+      padding-bottom: 0.8rem;
+    }
+
+    .summary-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      margin-bottom: 1rem;
+      font-size: 0.98rem;
+      color: #1f405e;
+    }
+
+    .summary-item span:first-child {
+      font-weight: 500;
+      color: #4b6582;
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+    }
+
+    .summary-item span:first-child i {
+      width: 1.2rem;
+      font-size: 0.85rem;
+      color: #2a7faa;
+    }
+
+    .summary-item span:last-child {
+      font-weight: 600;
+      color: #0b2b4a;
+      text-align: right;
+      word-break: break-word;
+    }
+
+    .divider {
+      border-top: 1.5px solid #c8daea;
+      margin: 1.2rem 0 1rem;
+    }
+
+    .total-price {
+      display: flex;
+      justify-content: space-between;
+      font-size: 1.4rem;
+      font-weight: 700;
+      color: #0b2b4a;
+      background: #ffffffcc;
+      padding: 0.9rem 1.2rem;
+      border-radius: 1.5rem;
+      margin: 1.2rem 0 1rem;
+      backdrop-filter: blur(4px);
+      border: 1px solid #b9d3e9;
+    }
+
+    .total-price span:last-child {
+      color: #176b9c;
+    }
+
+    .note {
+      font-size: 0.78rem;
+      color: #657f99;
+      text-align: center;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.4rem;
+    }
+
+    /* ----- FOOTER MESSAGE / CONFIRMATION ----- */
+    .confirmation-message {
+      margin-top: 2rem;
+      background: #dff0e2;
+      color: #1e6b3b;
+      padding: 1rem 1.8rem;
+      border-radius: 3rem;
+      font-weight: 500;
+      display: none;
+      align-items: center;
+      gap: 0.8rem;
+      border: 1px solid #b8dfc5;
+      animation: fadeIn 0.3s;
+    }
+
+    .confirmation-message i {
+      font-size: 1.5rem;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(6px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* ----- RESPONSIVE ----- */
+    @media (max-width: 850px) {
+      .booking-wrapper {
+        padding: 1.8rem 1.2rem;
+      }
+      .booking-panel {
+        grid-template-columns: 1fr;
+        gap: 2rem;
+      }
+      .summary-card {
+        position: static;
+      }
+      .form-row {
+        grid-template-columns: 1fr;
+        gap: 1rem;
+      }
+      .guest-row {
+        flex-direction: column;
+        gap: 0.8rem;
+      }
+      h1 {
+        font-size: 1.7rem;
+      }
+    }
+
+    /* small touch for readonly summary values */
+    .summary-item span:last-child {
+      max-width: 60%;
+    }
+
+    /* success message when booking */
+    .booking-ref {
+      font-weight: 700;
+      color: #0b2b4a;
+      background: #e6f0f9;
+      padding: 0.15rem 0.7rem;
+      border-radius: 2rem;
+      font-size: 0.9rem;
+    }
+  </style>
+</head>
+<body>
+<div class="booking-wrapper">
+  <h1>
+    <i class="fas fa-bed"></i> StayEase
+  </h1>
+  <div class="subhead">Book your perfect stay — simple, fast, friendly.</div>
+
+  <div class="booking-panel">
+    <!-- LEFT: BOOKING FORM -->
+    <form class="booking-form" id="bookingForm" onsubmit="return false;">
+      <div class="form-row">
+        <div class="form-group full-width">
+          <label><i class="fas fa-user"></i> Full name</label>
+          <input type="text" id="guestName" placeholder="e.g. Alex Morgan" value="Alex Morgan" required>
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label><i class="fas fa-envelope"></i> Email</label>
+          <input type="email" id="guestEmail" placeholder="alex@example.com" value="alex@example.com" required>
+        </div>
+        <div class="form-group">
+          <label><i class="fas fa-phone-alt"></i> Phone</label>
+          <input type="tel" id="guestPhone" placeholder="+1 555 123 4567" value="+1 555 123 4567">
+        </div>
+      </div>
+
+      <!-- check-in / check-out -->
+      <div class="form-row">
+        <div class="form-group">
+          <label><i class="fas fa-calendar-check"></i> Check-in</label>
+          <input type="date" id="checkIn" value="2025-06-10" required>
+        </div>
+        <div class="form-group">
+          <label><i class="fas fa-calendar-times"></i> Check-out</label>
+          <input type="date" id="checkOut" value="2025-06-14" required>
+        </div>
+      </div>
+
+      <!-- room type + guests (adults/children) -->
+      <div class="form-row">
+        <div class="form-group">
+          <label><i class="fas fa-door-open"></i> Room type</label>
+          <select id="roomType" required>
+            <option value="Standard">Standard · $120 / night</option>
+            <option value="Deluxe" selected>Deluxe · $180 / night</option>
+            <option value="Suite">Suite · $280 / night</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label><i class="fas fa-user-friends"></i> Guests</label>
+          <div class="guest-row">
+            <select id="adults" required>
+              <option value="1">1 adult</option>
+              <option value="2" selected>2 adults</option>
+              <option value="3">3 adults</option>
+              <option value="4">4 adults</option>
+            </select>
+            <select id="children">
+              <option value="0" selected>0 child</option>
+              <option value="1">1 child</option>
+              <option value="2">2 children</option>
+              <option value="3">3 children</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <div class="form-group full-width">
+        <label><i class="fas fa-comment-dots"></i> Special requests (optional)</label>
+        <textarea id="specialRequest" placeholder="e.g. high floor, late check-in, extra pillows..."></textarea>
+      </div>
+
+      <!-- BOOK BUTTON -->
+      <button type="submit" class="btn-book" id="bookBtn">
+        <i class="fas fa-check-circle"></i> Confirm booking
+      </button>
+    </form>
+
+    <!-- RIGHT: LIVE SUMMARY -->
+    <div class="summary-card">
+      <h2><i class="fas fa-receipt"></i> Your booking</h2>
+      <div class="summary-item">
+        <span><i class="fas fa-user"></i> Guest</span>
+        <span id="summaryGuest">Alex Morgan</span>
+      </div>
+      <div class="summary-item">
+        <span><i class="fas fa-door-open"></i> Room</span>
+        <span id="summaryRoom">Deluxe</span>
+      </div>
+      <div class="summary-item">
+        <span><i class="fas fa-calendar-alt"></i> Check-in</span>
+        <span id="summaryCheckIn">2025-06-10</span>
+      </div>
+      <div class="summary-item">
+        <span><i class="fas fa-calendar-alt"></i> Check-out</span>
+        <span id="summaryCheckOut">2025-06-14</span>
+      </div>
+      <div class="summary-item">
+        <span><i class="fas fa-moon"></i> Nights</span>
+        <span id="summaryNights">4</span>
+      </div>
+      <div class="summary-item">
+        <span><i class="fas fa-user-friends"></i> Guests</span>
+        <span id="summaryGuests">2 adults, 0 children</span>
+      </div>
+      <div class="divider"></div>
+      <div class="summary-item">
+        <span><i class="fas fa-tag"></i> Price / night</span>
+        <span id="summaryPricePerNight">$180</span>
+      </div>
+      <div class="total-price">
+        <span>Total</span>
+        <span id="summaryTotal">$720</span>
+      </div>
+      <div class="note">
+        <i class="fas fa-shield-alt"></i> Free cancellation up to 48h before arrival
+      </div>
+    </div>
+  </div>
+
+  <!-- CONFIRMATION MESSAGE (hidden by default) -->
+  <div class="confirmation-message" id="confirmationMsg">
+    <i class="fas fa-check-circle"></i>
+    <span id="confirmationText">Booking confirmed! Your reference: SE-12345</span>
+  </div>
+</div>
+
+<script>
+  (function() {
+    // ----- DOM elements -----
+    const guestNameInput = document.getElementById('guestName');
+    const guestEmailInput = document.getElementById('guestEmail');
+    const guestPhoneInput = document.getElementById('guestPhone');
+    const checkInInput = document.getElementById('checkIn');
+    const checkOutInput = document.getElementById('checkOut');
+    const roomTypeSelect = document.getElementById('roomType');
+    const adultsSelect = document.getElementById('adults');
+    const childrenSelect = document.getElementById('children');
+    const specialRequestTextarea = document.getElementById('specialRequest');
+    const bookBtn = document.getElementById('bookBtn');
+    const confirmationMsg = document.getElementById('confirmationMsg');
+    const confirmationText = document.getElementById('confirmationText');
+
+    // Summary elements
+    const summaryGuest = document.getElementById('summaryGuest');
+    const summaryRoom = document.getElementById('summaryRoom');
+    const summaryCheckIn = document.getElementById('summaryCheckIn');
+    const summaryCheckOut = document.getElementById('summaryCheckOut');
+    const summaryNights = document.getElementById('summaryNights');
+    const summaryGuests = document.getElementById('summaryGuests');
+    const summaryPricePerNight = document.getElementById('summaryPricePerNight');
+    const summaryTotal = document.getElementById('summaryTotal');
+
+    // ----- room prices map -----
+    const roomPrices = {
+      'Standard': 120,
+      'Deluxe': 180,
+      'Suite': 280
+    };
+
+    // ----- helper: parse date string YYYY-MM-DD to Date object (UTC to avoid timezone issues) -----
+    function parseDate(dateStr) {
+      const [year, month, day] = dateStr.split('-').map(Number);
+      return new Date(Date.UTC(year, month - 1, day));
+    }
+
+    // ----- calculate nights between two dates (inclusive of check-in, exclusive of check-out) -----
+    function calculateNights(checkInStr, checkOutStr) {
+      if (!checkInStr || !checkOutStr) return 1;
+      const start = parseDate(checkInStr);
+      const end = parseDate(checkOutStr);
+      const diffTime = end - start;
+      const diffDays = Math.round(diffTime / (1000 * 60 * 60 * 24));
+      return diffDays > 0 ? diffDays : 1; // fallback 1 if invalid / same day
+    }
+
+    // ----- update summary panel and return the computed values -----
+    function updateSummary() {
+      // 1. guest name
+      const guestName = guestNameInput.value.trim() || 'Guest';
+      summaryGuest.textContent = guestName;
+
+      // 2. room type & price per night
+      const roomType = roomTypeSelect.value;
+      summaryRoom.textContent = roomType;
+      const pricePerNight = roomPrices[roomType] || 180; // fallback
+      summaryPricePerNight.textContent = `$${pricePerNight}`;
+
+      // 3. dates
+      const checkIn = checkInInput.value;
+      const checkOut = checkOutInput.value;
+      summaryCheckIn.textContent = checkIn || '—';
+      summaryCheckOut.textContent = checkOut || '—';
+
+      // 4. nights
+      const nights = calculateNights(checkIn, checkOut);
+      summaryNights.textContent = nights;
+
+      // 5. guests
+      const adults = adultsSelect.value;
+      const children = childrenSelect.value;
+      const guestText = `${adults} adult${adults > 1 ? 's' : ''}, ${children} child${children != 1 ? 'ren' : ''}`;
+      summaryGuests.textContent = guestText;
+
+      // 6. total price
+      const total = pricePerNight * nights;
+      summaryTotal.textContent = `$${total}`;
+
+      return { guestName, roomType, checkIn, checkOut, nights, adults, children, pricePerNight, total };
+    }
+
+    // ----- attach event listeners for live updates -----
+    const inputsToWatch = [
+      guestNameInput, checkInInput, checkOutInput, roomTypeSelect, adultsSelect, childrenSelect
+    ];
+    inputsToWatch.forEach(el => {
+      el.addEventListener('input', updateSummary);
+      el.addEventListener('change', updateSummary);
+    });
+
+    // also update on page load
+    updateSummary();
+
+    // ----- handle booking submission -----
+    function handleBooking(e) {
+      e.preventDefault();
+
+      // gather all data (and update summary first)
+      const data = updateSummary();
+
+      // basic validation (browser handles required, but double-check dates)
+      if (!checkInInput.value || !checkOutInput.value) {
+        alert('Please select both check-in and check-out dates.');
+        return;
+      }
+
+      const checkInDate = parseDate(checkInInput.value);
+      const checkOutDate = parseDate(checkOutInput.value);
+      if (checkOutDate <= checkInDate) {
+        alert('Check-out date must be after check-in date.');
+        return;
+      }
+
+      // Simulate a booking reference
+      const refCode = 'SE-' + Math.floor(10000 + Math.random() * 90000);
+      const guestFirstName = guestNameInput.value.trim().split(' ')[0] || 'Guest';
+
+      // Show confirmation message with details
+      confirmationText.innerHTML = `Booking confirmed for <strong>${data.guestName}</strong> · 
+        ${data.roomType} room, ${data.nights} night${data.nights > 1 ? 's' : ''} · 
+        Total $${data.total} · Reference: <span class="booking-ref">${refCode}</span>`;
+
+      confirmationMsg.style.display = 'flex';
+
+      // optional: scroll to confirmation message smoothly
+      confirmationMsg.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+
+      // (optional) reset? no — keep data for review. but we could disable button briefly to prevent double click
+      bookBtn.disabled = true;
+      bookBtn.innerHTML = '<i class="fas fa-spinner fa-pulse"></i> Processing...';
+      setTimeout(() => {
+        bookBtn.disabled = false;
+        bookBtn.innerHTML = '<i class="fas fa-check-circle"></i> Confirm booking';
+      }, 1200);
+    }
+
+    // attach submit handler to form (button is type="submit")
+    const form = document.getElementById('bookingForm');
+    form.addEventListener('submit', handleBooking);
+
+    // also attach click on button (just in case, but form handles it)
+    // but we already have onsubmit="return false" inline — we override with event listener. remove inline attribute influence.
+    // The inline onsubmit="return false" is present in HTML; but our event listener will also run and we call preventDefault.
+    // Let's make sure no conflict: we remove inline handler by setting form.onsubmit = null; but it's ok.
+    // For consistency:
+    form.onsubmit = null; // remove inline handler if any
+
+    // but we already attached addEventListener; it will work.
+    // Additionally, if someone presses enter in field, form submits → handler runs.
+
+    // extra: if user changes anything after confirmation, hide message? (better UX)
+    inputsToWatch.forEach(el => {
+      el.addEventListener('input', () => {
+        confirmationMsg.style.display = 'none';
+      });
+    });
+    // also on room type / guest select change
+    roomTypeSelect.addEventListener('change', () => confirmationMsg.style.display = 'none');
+    adultsSelect.addEventListener('change', () => confirmationMsg.style.display = 'none');
+    childrenSelect.addEventListener('change', () => confirmationMsg.style.display = 'none');
+
+    // initial hide confirmation
+    confirmationMsg.style.display = 'none';
+  })();
+</script>
+</body>
+</html>
